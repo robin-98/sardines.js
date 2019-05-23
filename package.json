@@ -1,38 +1,40 @@
 {
-  "name": "sardines",
-  "version": "0.0.1",
-  "description": "Sardines.js is a Free-to-Decompose distributed system and application framework in Typescript, and runnable in both the server and browser",
-  "main": "src/index.js",
-  "scripts": {
-    "test": "mocha test/index.js",
-    "buildDev": "webpack --config ./conf/webpack.dev.js",
-    "dev": "node ./lib/dev/index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/robin-98/sardines.js.git"
-  },
-  "keywords": [
-    "Free-to-Decompose",
-    "distributed",
-    "framework",
-    "FaaS"
-  ],
-  "author": {
-    "name": "Robin Sun",
-    "email": "robin@naturewake.com"
-  },
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/robin-98/sardines.js/issues"
-  },
-  "homepage": "https://github.com/robin-98/sardines.js#readme",
-  "devDependencies": {
-    "ts-loader": "^5.3.3",
-    "webpack": "^4.29.6",
-    "webpack-cli": "^3.3.0"
-  },
-  "dependencies": {
-    "typescript": "^3.4.3"
-  }
+    "author": {
+        "email": "robin@naturewake.com",
+        "name": "Robin Sun"
+    },
+    "bugs": {
+        "url": "https://github.com/robin-98/sardines.core.js/issues"
+    },
+    "dependencies": {
+        "sardines-utils": "file:../sardines.utils.js",
+        "typescript": "^3.4.5"
+    },
+    "description": "Sardines.js is a Free-to-Decompose distributed system and application framework in Typescript, and runnable in both the server and browser",
+    "devDependencies": {
+        "mocha": "^6.1.4",
+        "ts-loader": "^5.4.3",
+        "webpack": "^4.30.0",
+        "webpack-cli": "^3.3.1"
+    },
+    "homepage": "https://github.com/robin-98/sardines.core.js#readme",
+    "keywords": [
+        "Free-to-Decompose",
+        "distributed",
+        "framework",
+        "FaaS"
+    ],
+    "license": "ISC",
+    "main": "src/index.js",
+    "name": "sardines-core",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/robin-98/sardines.core.js.git"
+    },
+    "scripts": {
+        "buildDev": "webpack --config ./conf/webpack.dev.js",
+        "dev": "node ./lib/dev/index.js",
+        "test": "mocha test/index.js"
+    },
+    "version": "0.0.1"
 }
