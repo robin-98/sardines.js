@@ -16,19 +16,27 @@ let entries: RepositoryEntry[] = []
 
 export const requestRepoService = async (moduleName: string, service: string, ...args:any[]) => {
     const badEntries: RepositoryEntry[] = []
+    let res = null
     for (let i = entries.length-1; i>=0; i--) {
         const entry = entries[i]
         try {
             const driverInstance = utils.Factory.getInstance(entry.driver, entry.address)
             if (driverInstance && driverInstance.invoke) {
-                return await driverInstance.invoke({application: null, module: moduleName, service}, ...args)
+                res = await driverInstance.invoke({application: null, module: moduleName, service}, ...args)
+                break
+            } else {
+                throw 'bad driver'
             }
         } catch (e) {
-            badEntries.push(entries.pop()!)
+            if (e !== 'bad driver' && e.message !== 'bad driver') {
+                badEntries.push(entries.pop()!)
+            } else {
+                entries.pop()
+            }
         }
     }
     Array.prototype.unshift.apply(entries, badEntries)
-    return null
+    return res 
 }
 export const setup = (entries: RepositoryEntry[]) => {
     entries = entries.reverse()
