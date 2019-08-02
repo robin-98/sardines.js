@@ -1,7 +1,7 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-      "declarationDir": "../lib/prod",
-      "outDir": "../lib/prod"
-  }
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "declarationDir": "../lib/prod",
+        "outDir": "../lib/prod"
+    }
 }

@@ -7,20 +7,15 @@
         "url": "https://github.com/robin-98/sardines.core.js/issues"
     },
     "dependencies": {
-        "@types/node-fetch": "^2.5.0",
-        "node-fetch": "^2.6.0",
-        "sardines-built-in-services": "file:../sardines.built-in-services.js",
-        "sardines-utils": "file:../sardines.utils.js",
+        "@types/isomorphic-fetch": "0.0.35",
+        "@types/node": "^12.6.9",
+        "@types/npm": "^2.0.30",
+        "isomorphic-fetch": "^2.2.1",
+        "npm": "^6.10.2",
         "typescript": "^3.4.5"
     },
-    "description": "Sardines.js is a Free-to-Decompose distributed system and application framework in Typescript, and runnable in both the server and browser",
-    "devDependencies": {
-        "mocha": "^6.1.4",
-        "ts-loader": "^5.4.3",
-        "webpack": "^4.30.0",
-        "sardines-compile-time-tools": "file:../sardines.compile-time-tools.js",
-        "webpack-cli": "^3.3.1"
-    },
+    "description": "Core of sardines.js",
+    "devDependencies": {},
     "homepage": "https://github.com/robin-98/sardines.core.js#readme",
     "keywords": [
         "Free-to-Decompose",
@@ -32,22 +27,20 @@
     "main": "lib/prod/index.js",
     "type": "lib/prod/index.d.ts",
     "name": "sardines-core",
+    "bin": {
+        "sardines": "lib/prod/bin.js"
+    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/robin-98/sardines.core.js.git"
     },
     "scripts": {
-        "reverseCompile": "sardines-compiler --reverse ./src",
-        "compileRepo": "file=repository.json; sardines-compiler --application=sardines --recompile --verbose --gen-services=$file ./src/repository",
-        "buildProd": "npm run clearProd && tsc --build conf/tsconfig.prod.json && npm run makeExecProd",
-        "prod": "npm run compileRepo && npm run reverseCompile && npm run buildProd  && node lib/prod/index.js",
-        "buildDev": " npm run clearDev && tsc --build conf/tsconfig.dev.json && npm run makeExecDev",
-        "dev": "npm run compileRepo && npm run reverseCompile && npm run buildDev && node lib/dev/index.js",
-        "clear": "rm -rf lib/*",
-        "clearDev": "rm -rf lib/dev",
-        "clearProd": "rm -rf lib/prod",
-        "makeExecProd": "file=lib/prod/index.js; { echo '#!/usr/bin/env node'; cat $file; } > ${file}.tmp && mv ${file}.tmp $file && chmod a+x $file",
-        "makeExecDev": "file=lib/dev/index.js; { echo '#!/usr/bin/env node'; cat $file; } > ${file}.tmp && mv ${file}.tmp $file && chomd a+x $file"
+        "buildProd": "npm run clear && tsc --build conf/tsconfig.prod.json",
+        "prod": "npm run buildProd && node lib/prod/index.js",
+        "buildDev": "npm run clear && tsc --build conf/tsconfig.dev.json",
+        "dev": "npm run buildDev && node lib/dev/index.js",
+        "test": "mocha test/index.js",
+        "clear": "rm -rf lib/*"
     },
-    "version": "0.0.1"
+    "version": "0.2.3"
 }
