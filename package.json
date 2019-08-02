@@ -24,23 +24,21 @@
         "FaaS"
     ],
     "license": "ISC",
-    "main": "lib/prod/index.js",
-    "type": "lib/prod/index.d.ts",
+    "main": "lib/index.js",
+    "type": "lib/index.d.ts",
     "name": "sardines-core",
     "bin": {
-        "sardines": "lib/prod/bin.js"
+        "sardines": "lib/bin.js"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/robin-98/sardines.core.js.git"
     },
     "scripts": {
-        "buildProd": "npm run clear && tsc --build conf/tsconfig.prod.json",
-        "prod": "npm run buildProd && node lib/prod/index.js",
-        "buildDev": "npm run clear && tsc --build conf/tsconfig.dev.json",
-        "dev": "npm run buildDev && node lib/dev/index.js",
-        "test": "mocha test/index.js",
-        "clear": "rm -rf lib/*"
+        "build": "npm run clear && tsc --build conf/tsconfig.json",
+        "clear": "rm -rf lib/*",
+        "makeExec": "file=lib/bin.js; { echo '#!/usr/bin/env node'; cat $file; } > ${file}.tmp && mv ${file}.tmp $file && chmod a+x $file",
+        "prepublish": "npm run build && npm run makeExec"
     },
-    "version": "0.2.3"
+    "version": "0.3.0"
 }
