@@ -6,31 +6,12 @@
  * @desc [description]
  */
 import * as fetch from 'isomorphic-fetch'
-import * as path from 'path'
-import * as fs from 'fs'
 import { Sardines } from './sardines_interfaces'
 
 export namespace RepositoryClient {
   export const sardineAppName = 'sardines'
   export const sardineRepoModuleName = '/repository'
-  
-  
-  export const genServiceIdentitySting = (serviceIdentity: Sardines.ServiceIdentity):string => {
-    return `${serviceIdentity.application}:${serviceIdentity.module}:${serviceIdentity.name}:${serviceIdentity.version}`
-  }
-  
-  export const parseServiceIdentity = (identityString: string):Sardines.ServiceIdentity|null => {
-    if (!identityString) return null
-    const parts = identityString.split(':')
-    if (parts.length !== 3 && parts.length !== 4) return null
-    return {
-      application: parts[0],
-      module: parts[1],
-      name: parts[2],
-      version: parts.length === 4 ? parts[3] : '*'
-    }
-  }
-  
+
   export enum RepositoryService {
       signIn = 'signIn',
       signOut = 'signOut',
@@ -38,72 +19,11 @@ export namespace RepositoryClient {
       queryService = 'queryService',
       createOrUpdateSource = 'createOrUpdateSource',
       createOrUpdateApplication = 'createOrUpdateApplication',
-      createOrUpdateService = 'createOrUpdateService'
+      createOrUpdateService = 'createOrUpdateService',
+      fetchServiceRuntime = 'fetchServiceRuntime'
   }
   
   
-  
-  export const readSardinesConfigFile = (sardinesConfigFile: string):Sardines.Config => {
-      if (!fs.existsSync(sardinesConfigFile)) {
-        throw(`Sardines configure file [${sardinesConfigFile}] does not exist`)
-      }
-      
-      if (!fs.lstatSync(sardinesConfigFile).isFile()) {
-        throw(`Sardines configure file [${sardinesConfigFile}] is invalid`)
-      }
-    
-      if (path.extname(sardinesConfigFile).toLowerCase() !== '.json') {
-        throw(`Sardines configure file [${sardinesConfigFile}] must in JSON format`)
-      }
-      
-      let sardinesConfig:Sardines.Config|null = null
-      
-      try {
-        sardinesConfig = JSON.parse(fs.readFileSync(sardinesConfigFile).toString())
-      } catch (e) {
-        throw(`Sardines configure file [${sardinesConfigFile}] has broken`)
-      }
-    
-      // Check content
-      if (!sardinesConfig || JSON.stringify(sardinesConfig) === JSON.stringify({})) {
-        throw(`Sardines configure file [${sardinesConfigFile}] is empty`)
-      }
-    
-      if (!sardinesConfig.application || typeof sardinesConfig.application !== 'string') {
-        throw(`Application name is missing in sardines configure file [${sardinesConfigFile}]`)
-      }
-    
-      if (!sardinesConfig.repositoryEntries || !Array.isArray(sardinesConfig.repositoryEntries) || sardinesConfig.repositoryEntries.length === 0){
-        throw(`Repository entries are missing in sardines configure file [${sardinesConfigFile}]`)
-      }
-    
-      if (sardinesConfig.srcRootDir && typeof sardinesConfig.srcRootDir !== 'string') {
-        throw(`srcRootDir is wrong in sardines configure file [${sardinesConfigFile}]`)
-      }
-    
-      if (sardinesConfig.sardinesDir && typeof sardinesConfig.sardinesDir !== 'string') {
-        throw(`sardinesDir is wrong in sardines configure file [${sardinesConfigFile}]`)
-      }
-    
-    
-      // Default values
-      if (!sardinesConfig.srcRootDir) sardinesConfig.srcRootDir = './src'
-      if (!sardinesConfig.sardinesDir) sardinesConfig.sardinesDir = 'sardines'
-      for (let entry of sardinesConfig.repositoryEntries) {
-        if (!entry.user && !entry.password ) entry.password = 'anonymous'
-        if (!entry.user) entry.user = 'anonymous'
-      }
-  
-      if (!sardinesConfig.drivers || !sardinesConfig.drivers.length) {
-        sardinesConfig.drivers = [{
-          name: 'sardines-service-driver-http',
-          locationType: Sardines.LocationType.npm,
-          protocols: ['http', 'https']
-        }]
-      }
-    
-      return sardinesConfig!
-    }
   
   let entries: Sardines.RepositoryEntry[] = []
   
@@ -118,19 +38,12 @@ export namespace RepositoryClient {
     setupRepositoryEntries(config!.repositoryEntries)
   }
   
-  export const setupRepositoryEntriesByConfigFile = (sardinesConfigFile:string):Sardines.Config => {
-      let sardinesConfig:Sardines.Config|null = null
-      sardinesConfig = readSardinesConfigFile(sardinesConfigFile)
-      setupRepositoryEntriesBySardinesConfig(sardinesConfig)
-      return sardinesConfig!
-  }
-  
   const requestRepoServiceOnSingleEntry = async(entry: Sardines.RepositoryEntry, service: RepositoryService, ...args: any[]):Promise<any> => {
       const addr = entry.address
       const pvdr = addr.providerInfo
       if (addr.type === 'native-http') {
           let url = `${pvdr.host}${pvdr.port && pvdr.port !== 80? ':' + pvdr.port : ''}`
-          url = path.join(url, `/${sardineRepoModuleName}/${service}`)
+          url = `${url}/${sardineRepoModuleName}/${service}`.replace(/\/+/g, '/')
           url = `${pvdr.protocol}://${url}`
           let body = { }
           if (service === RepositoryService.signIn) {
@@ -145,6 +58,8 @@ export namespace RepositoryClient {
             body = { application: args[0], token: entry.token }
           } else if (service === RepositoryService.createOrUpdateService) {
             body = { service: args[0], token: entry.token }
+          } else if (service === RepositoryService.fetchServiceRuntime) {
+            body = { serviceIdentity: args[0], token: entry.token }
           }
           let method = 'post'
           if (service === RepositoryService.signIn || service === RepositoryService.signUp) method = 'put'
@@ -223,5 +138,9 @@ export namespace RepositoryClient {
   
   export const createOrUpdateService = async(service: any) => {
       return await requestRepoService(RepositoryService.createOrUpdateService, service)
+  }
+
+  export const fetchServiceRuntime = async(serviceIdentity: Sardines.ServiceIdentity) => {
+    return await requestRepoService(RepositoryService.fetchServiceRuntime, serviceIdentity)
   }
 }

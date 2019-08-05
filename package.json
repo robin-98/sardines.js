@@ -9,10 +9,12 @@
     "dependencies": {
         "@types/isomorphic-fetch": "0.0.35",
         "@types/node": "^12.6.9",
-        "@types/npm": "^2.0.30",
+        "@types/semver": "^6.0.1",
         "isomorphic-fetch": "^2.2.1",
-        "npm": "^6.10.2",
-        "typescript": "^3.4.5"
+        "process": "^0.11.10",
+        "semver": "^6.3.0",
+        "typescript": "^3.5.3",
+        "util": "^0.12.1"
     },
     "description": "Core of sardines.js",
     "devDependencies": {},
@@ -25,11 +27,7 @@
     ],
     "license": "ISC",
     "main": "lib/index.js",
-    "type": "lib/index.d.ts",
     "name": "sardines-core",
-    "bin": {
-        "sardines": "lib/bin.js"
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/robin-98/sardines.core.js.git"
@@ -37,8 +35,8 @@
     "scripts": {
         "build": "npm run clear && tsc --build conf/tsconfig.json",
         "clear": "rm -rf lib/*",
-        "makeExec": "file=lib/bin.js; { echo '#!/usr/bin/env node'; cat $file; } > ${file}.tmp && mv ${file}.tmp $file && chmod a+x $file",
-        "prepublish": "npm run build && npm run makeExec"
+        "prepublish": "npm run build"
     },
-    "version": "0.3.0"
+    "type": "lib/index.d.ts",
+    "version": "0.3.11"
 }

@@ -6,7 +6,7 @@
  * @desc [description]
  */
 export namespace Sardines {
-    export interface ServiceRuntime {
+    export interface ServiceArgument {
         name: string
         type: string
     }
@@ -14,7 +14,7 @@ export namespace Sardines {
     export interface Service {
         name: string
         module: string
-        arguments: ServiceRuntime[]
+        arguments: ServiceArgument[]
         returnType: string
         isAsync: boolean
         filepath: string
@@ -24,7 +24,7 @@ export namespace Sardines {
         application: string
         module: string
         name: string
-        version: string
+        version?: string
     }
 
     export interface RepositoryEntryAddress {
@@ -100,11 +100,6 @@ export namespace Sardines {
         type: string
     }
     
-    export interface ServiceRuntime {
-        service: string
-        arguments?: ServiceArgument[]
-    }
-    
     export interface ApplicationSettings {
         name: string
         code: LocationSettings
@@ -119,10 +114,22 @@ export namespace Sardines {
         applications: ApplicationSettings[]
     }
 
-    export interface InvokeParameters {
-        application: string
-        module: string
-        name: string
-        version: string
-      }
+    export enum ServiceRuntimeEntryType {
+        dedicated = 'dedicated',
+        proxy = 'proxy'
+    }
+
+    export interface ServiceRuntimeEntry {
+        type: ServiceRuntimeEntryType
+        providerName: string
+        providerInfo: any
+    }
+
+    export interface ServiceRuntime {
+        identity: ServiceIdentity
+        arguments: ServiceArgument[]
+        returnType: string
+        entries: ServiceRuntimeEntry[]
+        expireInSeconds: number
+    }
 }

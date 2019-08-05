@@ -14,5 +14,5 @@ import * as utils from './utils'
 export { utils }
 
 export * from './repo_client'
-export * from './sourcing'
 export * from './core'
+export * from './factory'
