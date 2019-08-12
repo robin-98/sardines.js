@@ -6,7 +6,7 @@
  * @desc [description]
  */
 
-import { Sardines } from '../sardines_interfaces'
+import { Sardines } from '../interfaces/sardines'
 import { genServiceIdentitySting } from '../utils'
 import * as semver from 'semver'
 import { RepositoryClient } from '../repo_client'

@@ -5,7 +5,7 @@
  * @modify date 2019-08-02 18:09:37
  * @desc [description]
  */
-import { Sardines } from '../sardines_interfaces'
+import { Sardines } from '../interfaces/sardines'
 import { SardinesCore } from './CoreClass'
 // import { RepositoryClient } from '../repo_client'
 import * as utils from '../utils'
@@ -22,7 +22,6 @@ export namespace Core {
     console.log('invoking service:', serviceIdentity)
     try {
       let serviceRuntime = await coreInst.getServiceCache(serviceIdentity)
-      console.log('service runtime:', serviceRuntime)
       if (!serviceRuntime) {
         throw utils.unifyErrMesg('Service runtime does not exist', 'sardines', 'runtime')
       }

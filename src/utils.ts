@@ -7,7 +7,7 @@
  */
 import * as nodeUtil from 'util'
 import * as proc from 'process'
-import { Sardines } from './sardines_interfaces'
+import { Sardines } from './interfaces/sardines'
 
 // 2019-05-09
 export interface UnifiedErrorMessage {
@@ -191,3 +191,4 @@ export const parseServiceIdentity = (identityString: string):Sardines.ServiceIde
         version: parts.length === 4 ? parts[3] : '*'
     }
 }
+

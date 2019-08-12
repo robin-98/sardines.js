@@ -16,8 +16,8 @@ export namespace Sardines {
         module: string
         arguments: ServiceArgument[]
         returnType: string
-        isAsync: boolean
-        filepath: string
+        isAsync?: boolean
+        filepath?: string
     }
     
     export interface ServiceIdentity {
@@ -27,15 +27,10 @@ export namespace Sardines {
         version?: string
     }
 
-    export interface RepositoryEntryAddress {
-        type: string
-        providerInfo: any
-    }
-    
-    export interface RepositoryEntry {
-        address: RepositoryEntryAddress 
-        user: string
-        password: string
+    export interface Entry {
+        providerInfo: ProviderPublicInfo 
+        user?: string
+        password?: string
         token?: string
     }
 
@@ -53,15 +48,22 @@ export namespace Sardines {
         protocols: string[]
     }
 
+    export enum Platform {
+        nodejs = 'nodejs',
+        browser = 'browser',
+        reactNative = 'reactNative'
+    }
+
     export interface Config {
         application: string
+        platform: Platform
         exeDir?: string
         srcRootDir?: string 
         sardinesDir?: string 
         remoteServices?: {
             [appName: string]: Application
         }
-        repositoryEntries: RepositoryEntry[]
+        repositoryEntries: Entry[]
         drivers?: DriverSettings[]
     }
 
@@ -88,10 +90,26 @@ export namespace Sardines {
         commonSettings: any
         serviceSettings: ServiceSettingsForProvider[]
     }
-    
+
+    export interface DriversForProvider {
+        [platform: string]: string
+    }
+
+    export interface ProviderPublicInfo {
+        protocol: string
+        driver: string|DriversForProvider
+        [key: string]: any
+    }
+
     export interface ProviderSettings {
+        protocol: string
+        public: ProviderPublicInfo
+        [key: string]: any
+    }
+    
+    export interface ProviderDefinition {
         code: LocationSettings
-        providerSettings: any
+        providerSettings: ProviderSettings
         applicationSettings: ApplicationSettingsForProvider[]
     }
     
@@ -110,7 +128,7 @@ export namespace Sardines {
     }
     
     export interface DeployPlan {
-        providers: ProviderSettings[]
+        providers: ProviderDefinition[]
         applications: ApplicationSettings[]
     }
 
