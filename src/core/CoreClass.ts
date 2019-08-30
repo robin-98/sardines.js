@@ -16,11 +16,11 @@ export class ServiceRuntime {
   version: string
   arguments: Sardines.ServiceArgument[]
   returnType: string
-  entries: Sardines.ServiceRuntimeEntry[]
+  entries: Sardines.Runtime.ServiceEntry[]
 
   private expireTime: number
 
-  constructor(runtime: Sardines.ServiceRuntime) {
+  constructor(runtime: Sardines.Runtime.Service) {
     this.identity = runtime.identity
     this.version = runtime.identity.version || '*'
     this.arguments = runtime.arguments
@@ -84,7 +84,7 @@ export class SardinesCore {
     let runtimeInst: ServiceRuntime|null = null
     let error = null
     try {
-      const runtime: Sardines.ServiceRuntime = await RepositoryClient.fetchServiceRuntime(serviceIdentity)
+      const runtime: Sardines.Runtime.Service = await RepositoryClient.fetchServiceRuntime(serviceIdentity)
       if (runtime) runtimeInst = new ServiceRuntime(runtime)
     } catch (e) {
       error = e

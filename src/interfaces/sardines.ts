@@ -121,6 +121,7 @@ export namespace Sardines {
     export interface ApplicationSettings {
         name: string
         code: LocationSettings
+        version: string
         init: {
             service: string
             arguments: any[]
@@ -132,22 +133,30 @@ export namespace Sardines {
         applications: ApplicationSettings[]
     }
 
-    export enum ServiceRuntimeEntryType {
-        dedicated = 'dedicated',
-        proxy = 'proxy'
-    }
-
-    export interface ServiceRuntimeEntry {
-        type: ServiceRuntimeEntryType
-        providerName: string
-        providerInfo: any
-    }
-
-    export interface ServiceRuntime {
-        identity: ServiceIdentity
-        arguments: ServiceArgument[]
-        returnType: string
-        entries: ServiceRuntimeEntry[]
-        expireInSeconds: number
+    // Runtime interfaces
+    export namespace Runtime {
+        export enum ServiceEntryType {
+            dedicated = 'dedicated',
+            proxy = 'proxy'
+        }
+    
+        export interface ServiceEntry {
+            type: ServiceEntryType
+            providerName: string
+            providerInfo?: any
+            serviceSettings?: any
+        }
+    
+        export interface Service {
+            identity: ServiceIdentity
+            arguments: ServiceArgument[]
+            returnType: string
+            entries: ServiceEntry[]
+            expireInSeconds?: number
+        }
+    
+        export interface DeployResult {
+            [applicationName: string]: Service[]
+        }
     }
 }
