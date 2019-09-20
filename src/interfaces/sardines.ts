@@ -110,7 +110,7 @@ export namespace Sardines {
     export interface ProviderDefinition {
         code: LocationSettings
         providerSettings: ProviderSettings
-        applicationSettings: ApplicationSettingsForProvider[]
+        applicationSettings?: ApplicationSettingsForProvider[]
     }
     
     export interface ServiceArgument {
@@ -158,5 +158,44 @@ export namespace Sardines {
         export interface DeployResult {
             [applicationName: string]: Service[]
         }
+
+        // Runtime Resource
+        export enum LoadBalancingStrategy {
+            workloadFocusing = 'workloadFocusing',
+            evenWorkload = 'evenWorkload',
+            random = 'random'
+        }
+
+        export enum RuntimeStatus {
+            ready = 'ready',
+            pending = 'pending',
+            deploying = 'deploying'
+        }
+        
+        export enum RuntimeTargetType {
+            service = 'service',
+            host = 'host',
+        }
+
+        export enum ResourceType {
+            host = 'host'
+        }
+        
+        export interface Resource {
+            name: string
+            account: string
+            tags?: string[]
+            type?: ResourceType
+            status?: RuntimeStatus
+            workload_percentage?: number
+            address?: {
+              ipv4?: string
+              ssh_port?: number
+              ipv6?: string
+            }
+            cpu_cores?: number
+            mem_megabytes?: number
+            providers?: Sardines.ProviderDefinition[]
+          }
     }
 }

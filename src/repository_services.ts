@@ -222,7 +222,22 @@ export const Repository = {
       "returnType": "any"
     },
     {
-      "name": "hostHeartbeat",
+      "name": "resourceHeartbeat",
+      "module": "/repository",
+      "arguments": [
+        {
+          "name": "data",
+          "type": "any"
+        },
+        {
+          "name": "token",
+          "type": "string"
+        }
+      ],
+      "returnType": "any"
+    },
+    {
+      "name": "updateResourceInfo",
       "module": "/repository",
       "arguments": [
         {
