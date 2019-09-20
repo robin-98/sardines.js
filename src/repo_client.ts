@@ -9,6 +9,7 @@ import * as fetch from 'isomorphic-fetch'
 import { Sardines } from './interfaces/sardines'
 import { Factory } from './factory'
 import { Repository } from './repository_services'
+import { Source } from './npm_loader'
 
 
 export namespace RepositoryClient {
@@ -41,7 +42,6 @@ export namespace RepositoryClient {
   }
 
   export const setupDrivers = (driverCache: {[name: string]: any}) => {
-    drivers = driverCache
     for (let driverName in driverCache) {
       Factory.setClass(driverName, driverCache[driverName], 'driver')
       drivers[driverName] = true
@@ -174,6 +174,16 @@ export namespace RepositoryClient {
         } else {
           return resObj
         }
+      } else if (typeof driverName === 'string' && typeof drivers[driverName] === 'undefined') {
+        try {
+          let tmpDriverCatch: {[name:string]:any} = {}
+          tmpDriverCatch[driverName] = await Source.getPackageFromNpm(driverName, Sardines.LocationType.npm, false)
+          setupDrivers(tmpDriverCatch)
+        } catch (e) {
+          drivers[driverName] = false
+          throw { type: 'sardines', 'subType': 'repository client', error: `can not load npm package for driver "${pvdr.driver}" at runtime`, rawErr: e}
+        }
+        return await requestRepoServiceOnSingleEntry(entry, service, ...args)
       } else {
         throw { type: 'sardines', 'subType': 'repository client', error: `no available driver for "${pvdr.driver}" on platform '${platform}'`}
       }
