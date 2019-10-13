@@ -16,4 +16,4 @@ export { utils }
 export * from './repo_client'
 export * from './core'
 export * from './factory'
-export * from './npm_loader'
+

@@ -9,8 +9,6 @@ import * as fetch from 'isomorphic-fetch'
 import { Sardines } from './interfaces/sardines'
 import { Factory } from './factory'
 import { Repository } from './repository_services'
-import { Source } from './npm_loader'
-
 
 export namespace RepositoryClient {
   export const sardineAppName = 'sardines'
@@ -55,8 +53,34 @@ export namespace RepositoryClient {
       entries = repoEntries.reverse()
   }
   
-  export const setupRepositoryEntriesBySardinesConfig = (config: any) => {
-    setupRepositoryEntries((<Sardines.Config>config!).repositoryEntries)
+  export const setupRepositoryEntriesBySardinesConfig = (config: any, initDrivers: boolean = false) => {
+    if (config.repositoryEntries) {
+      setupRepositoryEntries(config.repositoryEntries)
+    }
+    if (config.platform) {
+      setupPlatform(config.platform)
+    }
+    if (initDrivers && config.drivers && config.drivers.length > 0) {
+      const drivers: {[name: string]: any} = {}
+      for (let driver of config.drivers) {
+        if (driver.locationType && driver.name) {
+          if (driver.locationType === Sardines.LocationType.npm || driver.locationType === Sardines.LocationType.npm_link) {
+            try {
+              drivers[driver.name] = require(driver.name)
+              if (drivers[driver.name] && drivers[driver.name].default) {
+                drivers[driver.name] = drivers[driver.name].default
+              }
+            } catch(e) {
+              console.error(`ERROR while loading ${driver.name}:`, e)
+              throw `Can not load driver ${driver.name}`
+            }
+          }
+        }
+      }
+      if (Object.keys(drivers).length > 0) {
+        setupDrivers(drivers)
+      }
+    }
   }
 
   enum ArgumentType {
@@ -174,16 +198,16 @@ export namespace RepositoryClient {
         } else {
           return resObj
         }
-      } else if (typeof driverName === 'string' && typeof drivers[driverName] === 'undefined') {
-        try {
-          let tmpDriverCatch: {[name:string]:any} = {}
-          tmpDriverCatch[driverName] = await Source.getPackageFromNpm(driverName, Sardines.LocationType.npm, false)
-          setupDrivers(tmpDriverCatch)
-        } catch (e) {
-          drivers[driverName] = false
-          throw { type: 'sardines', 'subType': 'repository client', error: `can not load npm package for driver "${pvdr.driver}" at runtime`, rawErr: e}
-        }
-        return await requestRepoServiceOnSingleEntry(entry, service, ...args)
+      // } else if (typeof driverName === 'string' && typeof drivers[driverName] === 'undefined') {
+      //   try {
+      //     let tmpDriverCatch: {[name:string]:any} = {}
+      //     tmpDriverCatch[driverName] = await Source.getPackageFromNpm(driverName, Sardines.LocationType.npm, false)
+      //     setupDrivers(tmpDriverCatch)
+      //   } catch (e) {
+      //     drivers[driverName] = false
+      //     throw { type: 'sardines', 'subType': 'repository client', error: `can not load npm package for driver "${pvdr.driver}" at runtime`, rawErr: e}
+      //   }
+      //   return await requestRepoServiceOnSingleEntry(entry, service, ...args)
       } else {
         throw { type: 'sardines', 'subType': 'repository client', error: `no available driver for "${pvdr.driver}" on platform '${platform}'`}
       }

@@ -19,6 +19,11 @@ export namespace Sardines {
         isAsync?: boolean
         filepath?: string
     }
+
+    export interface ServiceDescriptionFile {
+        services: Service[]
+        application: string
+    }
     
     export interface ServiceIdentity {
         application: string
@@ -54,6 +59,7 @@ export namespace Sardines {
         reactNative = 'reactNative'
     }
 
+    // sardines-config.json file
     export interface Config {
         application: string
         platform: Platform
@@ -128,6 +134,7 @@ export namespace Sardines {
         }[]
     }
     
+    // Deploy plan file for some services
     export interface DeployPlan {
         providers: ProviderDefinition[]
         applications: ApplicationSettings[]

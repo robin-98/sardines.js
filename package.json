@@ -9,10 +9,8 @@
     "dependencies": {
         "@types/isomorphic-fetch": "0.0.35",
         "@types/node": "^12.6.9",
-        "@types/npm": "^2.0.30",
         "@types/semver": "^6.0.1",
         "isomorphic-fetch": "^2.2.1",
-        "npm": "^6.11.3",
         "process": "^0.11.10",
         "semver": "^6.3.0",
         "typescript": "^3.5.3",
@@ -40,5 +38,5 @@
         "prepublish": "npm run build"
     },
     "type": "lib/index.d.ts",
-    "version": "0.3.32"
+    "version": "0.3.39"
 }

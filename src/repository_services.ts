@@ -207,21 +207,6 @@ export const Repository = {
       "returnType": "any"
     },
     {
-      "name": "deployHost",
-      "module": "/repository",
-      "arguments": [
-        {
-          "name": "data",
-          "type": "any"
-        },
-        {
-          "name": "token",
-          "type": "string"
-        }
-      ],
-      "returnType": "any"
-    },
-    {
       "name": "resourceHeartbeat",
       "module": "/repository",
       "arguments": [
@@ -238,6 +223,21 @@ export const Repository = {
     },
     {
       "name": "updateResourceInfo",
+      "module": "/repository",
+      "arguments": [
+        {
+          "name": "data",
+          "type": "any"
+        },
+        {
+          "name": "token",
+          "type": "string"
+        }
+      ],
+      "returnType": "any"
+    },
+    {
+      "name": "deployServices",
       "module": "/repository",
       "arguments": [
         {
