@@ -76,13 +76,15 @@ export namespace Sardines {
     export enum LocationType {
         npm_link = 'npm_link',
         npm = 'npm',
-        file = 'file'
+        file = 'file',
+        git = 'git'
       }
       
     export interface LocationSettings {
         name?: string
         locationType: LocationType
         location?: string
+        url?: string
     }
 
     export interface ServiceSettingsForProvider {
@@ -92,6 +94,7 @@ export namespace Sardines {
     }
     
     export interface ApplicationSettingsForProvider {
+        protocol?: string
         application: string
         commonSettings: any
         serviceSettings: ServiceSettingsForProvider[]
