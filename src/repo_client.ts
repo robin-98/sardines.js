@@ -42,7 +42,6 @@ export namespace RepositoryClient {
   export const setupDrivers = (driverCache: {[name: string]: any}) => {
     for (let driverName in driverCache) {
       Factory.setClass(driverName, driverCache[driverName], 'driver')
-      console.log('factory set class for driver', driverName, ', class:', driverCache[driverName])
       drivers[driverName] = true
     }
   }
@@ -175,7 +174,6 @@ export namespace RepositoryClient {
           return res 
       } else if (typeof driverName === 'string' && drivers[driverName]) {
         const driverInst = Factory.getInstance(pvdr.driver, pvdr, 'driver')
-        console.log('driverInst:', driverInst,'for driver:', pvdr.driver)
         let serviceDefinition = repoServices[service]
         let customArgs: any[] = <any[]>customArguments(ArgumentType.args, entry, service, ...args)
         let res = await driverInst.invokeService(repoAppName, serviceDefinition, ...customArgs )
