@@ -42,6 +42,7 @@ export namespace RepositoryClient {
   export const setupDrivers = (driverCache: {[name: string]: any}) => {
     for (let driverName in driverCache) {
       Factory.setClass(driverName, driverCache[driverName], 'driver')
+      console.log('factory set class for driver', driverName, ', class:', driverCache[driverName])
       drivers[driverName] = true
     }
   }
@@ -61,14 +62,14 @@ export namespace RepositoryClient {
       setupPlatform(config.platform)
     }
     if (initDrivers && config.drivers && config.drivers.length > 0) {
-      const drivers: {[name: string]: any} = {}
+      const tmpDrivers: {[name: string]: any} = {}
       for (let driver of config.drivers) {
-        if (driver.locationType && driver.name) {
+        if (driver.locationType && driver.name && !drivers[driver.name]) {
           if (driver.locationType === Sardines.LocationType.npm || driver.locationType === Sardines.LocationType.npm_link) {
             try {
-              drivers[driver.name] = require(driver.name)
-              if (drivers[driver.name] && drivers[driver.name].default) {
-                drivers[driver.name] = drivers[driver.name].default
+              tmpDrivers[driver.name] = require(driver.name)
+              if (tmpDrivers[driver.name] && tmpDrivers[driver.name].default) {
+                tmpDrivers[driver.name] = tmpDrivers[driver.name].default
               }
             } catch(e) {
               console.error(`ERROR while loading ${driver.name}:`, e)
@@ -77,8 +78,8 @@ export namespace RepositoryClient {
           }
         }
       }
-      if (Object.keys(drivers).length > 0) {
-        setupDrivers(drivers)
+      if (Object.keys(tmpDrivers).length > 0) {
+        setupDrivers(tmpDrivers)
       }
     }
   }
@@ -174,6 +175,7 @@ export namespace RepositoryClient {
           return res 
       } else if (typeof driverName === 'string' && drivers[driverName]) {
         const driverInst = Factory.getInstance(pvdr.driver, pvdr, 'driver')
+        console.log('driverInst:', driverInst,'for driver:', pvdr.driver)
         let serviceDefinition = repoServices[service]
         let customArgs: any[] = <any[]>customArguments(ArgumentType.args, entry, service, ...args)
         let res = await driverInst.invokeService(repoAppName, serviceDefinition, ...customArgs )

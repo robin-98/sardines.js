@@ -250,6 +250,21 @@ export const Repository = {
         }
       ],
       "returnType": "any"
+    },
+    {
+      "name": "updateServiceRuntime",
+      "module": "/repository",
+      "arguments": [
+        {
+          "name": "data",
+          "type": "any"
+        },
+        {
+          "name": "token",
+          "type": "string"
+        }
+      ],
+      "returnType": "any"
     }
   ],
   "application": "sardines"
