@@ -38,5 +38,5 @@
         "prepublish": "npm run build"
     },
     "type": "lib/index.d.ts",
-    "version": "0.3.42"
+    "version": "0.3.43"
 }
