@@ -23,8 +23,8 @@ export class ServiceRuntime {
   constructor(runtime: Sardines.Runtime.Service) {
     this.identity = runtime.identity
     this.version = runtime.identity.version || '*'
-    this.arguments = runtime.arguments
-    this.returnType = runtime.returnType
+    this.arguments = runtime.arguments  || []
+    this.returnType = runtime.returnType || 'any'
     this.entries = runtime.entries
 
     if (!runtime.expireInSeconds) {

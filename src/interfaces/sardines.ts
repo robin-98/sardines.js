@@ -152,16 +152,16 @@ export namespace Sardines {
     
         export interface ServiceEntry {
             type: ServiceEntryType
-            providerName: string
+            providerName?: string
             providerInfo?: any
-            serviceSettings?: any
+            settingsForProvider?: any
         }
     
         export interface Service {
             identity: ServiceIdentity
-            arguments: ServiceArgument[]
-            returnType: string
             entries: ServiceEntry[]
+            arguments?: ServiceArgument[]
+            returnType?: string
             expireInSeconds?: number
         }
     
