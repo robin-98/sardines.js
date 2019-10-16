@@ -19,6 +19,8 @@ export class Factory {
 
   static classes: Map<string, Map<string, any>> = new Map()
   static instances: Map<string, Array<FactoryInstance>> = new Map()
+  static instFastCache: Map<string, Map<string, any>> = new Map()
+
   // Factory method
   static setClass(name: string, Class: any, type: string = 'unknown'): void {
       if (typeof name !== 'string' || !name || typeof Class !== 'function') return
@@ -35,14 +37,14 @@ export class Factory {
       return category.get(name)
   }
 
-  static getInstance(CustomClass: any, settings: object, type: string = 'unknown'): any {
+  static getInstance(CustomClass: any, settings: object, type: string = 'unknown', fastKey: string = ''): any {
       if (!CustomClass) return null
-
       // Search by parameters
       let instance: any = null
 
       let memcache = this.instances.get(type)
-      if (memcache) {
+      let fastcache = this.instFastCache.get(type)
+      if (memcache && !fastKey) {
           for (let item of memcache) {
               if (isEqual(
                   { settings: item.settings, CustomClass: item.CustomClass },
@@ -52,6 +54,9 @@ export class Factory {
                   if (instance) return instance
               }
           }
+      } else if (fastKey && fastcache) {
+          instance = fastcache.get(fastKey)
+          if (instance) return instance
       }
 
       // Not found in memory
@@ -68,6 +73,14 @@ export class Factory {
               this.instances.set(type, memcache)
           }
           memcache.push({ instance, settings, CustomClass })
+
+          if (fastKey) {
+              if (!fastcache) {
+                  fastcache = new Map()
+                  this.instFastCache.set(type, fastcache)
+              }
+              fastcache.set(fastKey, instance)
+          }
       }
       return instance
   }
