@@ -182,7 +182,7 @@ export namespace RepositoryClient {
         err = utils.unifyErrMesg(`no available driver for "${pvdr.driver}" on platform '${platform}'`, 'sardines', 'repository client')
       } 
       
-      console.log('res:', res, 'resObj:', resObj, 'error:', err)
+      // utils.inspectedLog({ res, resObj, err, entries})
       // process response
       if (res === 'Invalid token' || res === 'token expired'
         || (err && typeof err.error === 'string'
@@ -200,13 +200,13 @@ export namespace RepositoryClient {
           await utils.sleep(Math.round(Math.random() * 500 + 100))
           await requestRepoServiceOnSingleEntry(entry, RepositoryService.signIn)
           return await requestRepoServiceOnSingleEntry(entry, service, ...args)
-        } else if (!resObj) {
+        } else if (!err) {
           throw res 
         } else {
-          throw resObj
+          throw err
         }
-      } else if (resObj && resObj.error) {
-        throw resObj 
+      } else if (err && err.error) {
+        throw err 
       } else {
         // save token and password
         if (service === RepositoryService.signIn || service === RepositoryService.signUp) {
