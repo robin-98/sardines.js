@@ -192,3 +192,11 @@ export const parseServiceIdentity = (identityString: string):Sardines.ServiceIde
     }
 }
 
+// 2019-10-17
+export const sleep = async(milliseconds: number) => {
+    return new Promise((res) => {
+        setTimeout(() => {
+            res()
+        }, milliseconds)
+    })
+}

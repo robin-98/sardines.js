@@ -9,6 +9,7 @@ import * as fetch from 'isomorphic-fetch'
 import { Sardines } from './interfaces/sardines'
 import { Factory } from './factory'
 import { Repository } from './repository_services'
+import * as utils from './utils'
 
 export namespace RepositoryClient {
   export const sardineAppName = 'sardines'
@@ -30,8 +31,12 @@ export namespace RepositoryClient {
   for (let service of Repository.services) {
     repoServices[service.name] = service
   }
-  
-  let entries: Sardines.Entry[] = []
+ 
+  interface EntryCache extends Sardines.Entry {
+    retryCount?: number
+    nextRetryOn?: number
+  }
+  let entries: EntryCache [] = []
   let drivers: {[name: string]: any} = {}
   let platform: string = 'nodejs'
 
@@ -87,7 +92,7 @@ export namespace RepositoryClient {
     body,
     args
   }
-  const customArguments = (argType: ArgumentType, entry: Sardines.Entry, service: RepositoryService|string, ...args: any[]) => {
+  const customArguments = (argType: ArgumentType, entry: EntryCache, service: RepositoryService|string, ...args: any[]) => {
     let body = { }, customArgs: any[] = []
     if (service === RepositoryService.signIn) {
       body = { account: {name: entry.user}, password: entry.password }
@@ -125,7 +130,7 @@ export namespace RepositoryClient {
     return method
   }
   
-  const requestRepoServiceOnSingleEntry = async(entry: Sardines.Entry, service: RepositoryService|string, ...args: any[]):Promise<any> => {
+  const requestRepoServiceOnSingleEntry = async(entry: EntryCache, service: RepositoryService|string, ...args: any[]):Promise<any> => {
       if (!repoServices[service]) {
         throw { type:'sardines', 'subType':'repository client', error:`unsupported repository action [${service}]`}
       }
@@ -134,87 +139,95 @@ export namespace RepositoryClient {
       if (typeof driverName === 'object') {
         driverName = driverName[platform]
       }
+      let resObj: any = null
+      let err: any = null
+      let res:any = null
       if (driverName === 'native-http') {
           let url = `${pvdr.host}${pvdr.port && pvdr.port !== 80? ':' + pvdr.port : ''}`
           url = `${url}/sardines/${sardineRepoModuleName}/${service}`.replace(/\/+/g, '/')
           url = `${pvdr.protocol}://${url}`
           let body = customArguments(ArgumentType.body, entry, service, ...args)
           let method = customMethod(service)
-          let res:any = await fetch(url, {
+          const fetchRes = await fetch(url, {
               method,
               body: JSON.stringify(body),
               headers: { 'content-type': 'application/json'}
           })
-          res = await res.text()
-          let resJson = null
+          res = await fetchRes.text()
           try {
-              resJson = JSON.parse(res)
+              resObj = JSON.parse(res)
           } catch (e) { }
-          if (res === 'Invalid token' || res === 'token expired' || (resJson && ['token expired', 'Invalid token'].indexOf(resJson.error)>=0)) {
-              await requestRepoServiceOnSingleEntry(entry, RepositoryService.signIn)
-              return await requestRepoServiceOnSingleEntry(entry, service, ...args)
-          } else if (res.toLowerCase() === 'not found' || res.toLowerCase() === 'method not allowed') {
-              throw `Can not access service [${service}] at URL: ${url}`
-          } else if (res && res.indexOf('error')>0) {
-              res = JSON.parse(res)
-              throw res
-          } 
-          if (service === RepositoryService.signIn || service === RepositoryService.signUp) {
-              entry.token = res
-              if (service === RepositoryService.signUp) {
-                  entry.user = args[0]
-                  entry.password = args[1]
-              }
-          } else  if (resJson && resJson.res !== undefined) {
-              return resJson.res
-          } else if (resJson) {
-              return resJson
+          if (res.toLowerCase() === 'not found' || res.toLowerCase() === 'method not allowed') {
+            err = utils.unifyErrMesg(`Service [${service}] does not exist at [${url}]`, 'sardines', 'repository client')
+          } else if (resObj && resObj.error) {
+            err = resObj
           }
-          
-          return res 
       } else if (typeof driverName === 'string' && drivers[driverName]) {
         const driverInst = Factory.getInstance(pvdr.driver, pvdr, 'driver')
         let serviceDefinition = repoServices[service]
         let customArgs: any[] = <any[]>customArguments(ArgumentType.args, entry, service, ...args)
-        let res = await driverInst.invokeService(repoAppName, serviceDefinition, ...customArgs )
-        let resObj = null
-        switch (serviceDefinition.returnType) {
-          case 'string': case 'number': case 'boolean':
-            break
-          default:
-            resObj = res
-            break
+        try {
+          res = await driverInst.invokeService(repoAppName, serviceDefinition, ...customArgs)
+          switch (serviceDefinition.returnType) {
+            case 'string': case 'number': case 'boolean':
+              break
+            default:
+              resObj = res
+              break
+          }
+        } catch (e) {
+          err = e
         }
+      } else {
+        err = utils.unifyErrMesg(`no available driver for "${pvdr.driver}" on platform '${platform}'`, 'sardines', 'repository client')
+      } 
+      
+      console.log('res:', res, 'resObj:', resObj, 'error:', err)
+      // process response
+      if (res === 'Invalid token' || res === 'token expired'
+        || (err && typeof err.error === 'string'
+          && err.type === 'repository' && ['token expired', 'Invalid token'].indexOf(err.error)>=0)
+          ) {
+        const retryLimit = 3
+        if (!entry.retryCount || entry.retryCount < retryLimit || !entry.nextRetryOn || Date.now() > entry.nextRetryOn) {
+          if (!entry.retryCount || entry.retryCount >= retryLimit) {
+            entry.retryCount = 0
+          }
+          if (!entry.retryCount) {
+            entry.nextRetryOn = Date.now() + 1000 * 60 * 5
+          }
+          entry.retryCount++
+          await utils.sleep(Math.round(Math.random() * 500 + 100))
+          await requestRepoServiceOnSingleEntry(entry, RepositoryService.signIn)
+          return await requestRepoServiceOnSingleEntry(entry, service, ...args)
+        } else if (!resObj) {
+          throw res 
+        } else {
+          throw resObj
+        }
+      } else if (resObj && resObj.error) {
+        throw resObj 
+      } else {
+        // save token and password
         if (service === RepositoryService.signIn || service === RepositoryService.signUp) {
           entry.token = res
           if (service === RepositoryService.signUp) {
               entry.user = args[0]
               entry.password = args[1]
           }
-        } 
-        if (!resObj) return res
-        else if (resObj.error) {
-          throw resObj
-        } else {
-          return resObj
         }
-      // } else if (typeof driverName === 'string' && typeof drivers[driverName] === 'undefined') {
-      //   try {
-      //     let tmpDriverCatch: {[name:string]:any} = {}
-      //     tmpDriverCatch[driverName] = await Source.getPackageFromNpm(driverName, Sardines.LocationType.npm, false)
-      //     setupDrivers(tmpDriverCatch)
-      //   } catch (e) {
-      //     drivers[driverName] = false
-      //     throw { type: 'sardines', 'subType': 'repository client', error: `can not load npm package for driver "${pvdr.driver}" at runtime`, rawErr: e}
-      //   }
-      //   return await requestRepoServiceOnSingleEntry(entry, service, ...args)
-      } else {
-        throw { type: 'sardines', 'subType': 'repository client', error: `no available driver for "${pvdr.driver}" on platform '${platform}'`}
+        if (resObj && resObj.res !== undefined) {
+            return resObj.res
+        } else if (resObj) {
+            return resObj
+        } else {
+          return res
+        }
       }
   }
   
   const requestRepoService = async (service: RepositoryService|string, ...args:any[]) => {
-      const failedEntries: Sardines.Entry[] = []
+      const failedEntries: EntryCache[] = []
       let res = null, error = null, entriesError: {[key: number]: any} = {} 
       for (let i = entries.length-1; i>=0; i--) {
           const entry = entries[i]
