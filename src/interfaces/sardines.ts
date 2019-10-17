@@ -163,6 +163,7 @@ export namespace Sardines {
             arguments?: ServiceArgument[]
             returnType?: string
             expireInSeconds?: number
+            resourceId?: string
         }
     
         export interface DeployResult {

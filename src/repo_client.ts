@@ -194,7 +194,7 @@ export namespace RepositoryClient {
             entry.retryCount = 0
           }
           if (!entry.retryCount) {
-            entry.nextRetryOn = Date.now() + 1000 * 60 * 5
+            entry.nextRetryOn = Date.now() + 1000 * 60 * 1
           }
           entry.retryCount++
           await utils.sleep(Math.round(Math.random() * 500 + 100))
