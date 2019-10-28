@@ -27,13 +27,17 @@ export class SardinesCore extends SardinesCoreRuntimeCache {
   }
 
   async invoke(service: Sardines.Runtime.Service, ...args: any[]) {
+    // console.log('invoking service')
+    // utils.inspectedLog(service)
     if (service.entries && service.entries.length && service.entries[0].providerInfo && service.entries[0].providerInfo.driver) {
       const driverInst = Factory.getInstance(service.entries[0].providerInfo.driver, service.entries[0].providerInfo, 'driver', utils.getDriverKey(service.entries[0].providerInfo))
+      // console.log('direct invoke', driverInst)
       return await driverInst.invokeService(service, ...args)
     } else if(service.identity && service.identity.application && service.identity.module && service.identity.name) {
       const serviceRuntime = await this.getService(service.identity)
       if (serviceRuntime) {
         const driverInst = Factory.getInstance(serviceRuntime.entries[0].providerInfo.driver, serviceRuntime.entries[0].providerInfo, 'driver', utils.getDriverKey(serviceRuntime.entries[0].providerInfo))
+        // console.log('auto select invoke', driverInst)
         return await driverInst.invokeService(serviceRuntime, ...args)
       } else {
         throw utils.unifyErrMesg(`Can not fetch runtime for service`, 'core', 'invoke')
