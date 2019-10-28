@@ -39,6 +39,12 @@ export namespace RepositoryClient {
   let entries: EntryCache [] = []
   let drivers: {[name: string]: any} = {}
   let platform: string = 'nodejs'
+  export let remoteServices: {[app: string]:{[moduleName: string]: {[serviceName: string]: string}}} = {}
+  export let localServices: {[app: string]:{[moduleName: string]: {[serviceName: string]: string}}} = {}
+  
+  export const setLocalServices = (localServiceCache: any) => {
+    localServices = localServiceCache
+  }
 
   export const setupPlatform = (p: string) => {
     platform = p
@@ -50,6 +56,8 @@ export namespace RepositoryClient {
       drivers[driverName] = true
     }
   }
+
+  
   
   export const setupRepositoryEntries = (repoEntries: Sardines.Entry[]) => {
       if (!repoEntries || !Array.isArray(repoEntries) || repoEntries.length == 0) {
@@ -64,6 +72,9 @@ export namespace RepositoryClient {
     }
     if (config.platform) {
       setupPlatform(config.platform)
+    }
+    if (config.remoteServices) {
+      remoteServices = config.remoteServices
     }
     if (initDrivers && config.drivers && config.drivers.length > 0) {
       const tmpDrivers: {[name: string]: any} = {}
@@ -163,11 +174,12 @@ export namespace RepositoryClient {
             err = resObj
           }
       } else if (typeof driverName === 'string' && drivers[driverName]) {
-        const driverInst = Factory.getInstance(pvdr.driver, pvdr, 'driver')
+        const driverInst = Factory.getInstance(pvdr.driver, pvdr, 'driver', utils.getDriverKey(pvdr))
         let serviceDefinition = repoServices[service]
         let customArgs: any[] = <any[]>customArguments(ArgumentType.args, entry, service, ...args)
         try {
-          res = await driverInst.invokeService(repoAppName, serviceDefinition, ...customArgs)
+          serviceDefinition.application = repoAppName
+          res = await driverInst.invokeService(Sardines.Transform.fromServiceToEmptyRuntime(serviceDefinition)!, ...customArgs)
           switch (serviceDefinition.returnType) {
             case 'string': case 'number': case 'boolean':
               break

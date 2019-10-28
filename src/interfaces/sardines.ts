@@ -12,6 +12,7 @@ export namespace Sardines {
     }
 
     export interface Service {
+        application?: string
         name: string
         module: string
         arguments: ServiceArgument[]
@@ -117,6 +118,7 @@ export namespace Sardines {
     }
     
     export interface ProviderDefinition {
+        name: string
         code: LocationSettings
         providerSettings: ProviderSettings
         applicationSettings?: ApplicationSettingsForProvider[]
@@ -132,7 +134,10 @@ export namespace Sardines {
         code: LocationSettings
         version: string
         init: {
-            service: string
+            service: {
+                module: string
+                name: string
+            }
             arguments: any[]
         }[]
     }
@@ -208,5 +213,21 @@ export namespace Sardines {
             mem_megabytes?: number
             providers?: Sardines.ProviderDefinition[]
           }
+    }
+
+    export namespace Transform {
+        export const fromServiceToEmptyRuntime = (service: Service): Runtime.Service|null => {
+            if (!service.application) return null
+            return {
+                identity: {
+                    application: service.application!,
+                    module: service.module,
+                    name: service.name
+                },
+                arguments: service.arguments,
+                returnType: service.returnType,
+                entries: []
+            }
+        }
     }
 }

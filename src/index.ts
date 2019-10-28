@@ -7,8 +7,7 @@
  */
 
 // 2019-08-02
-export * from './interfaces/http'
-export * from './interfaces/sardines'
+export * from './interfaces'
 
 import * as utils from './utils'
 export { utils }
