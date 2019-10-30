@@ -16,4 +16,8 @@ export namespace Core {
   export const invoke = async (service: Sardines.Runtime.Service, ...args: any[]) => {
     return await coreInst.invoke(service, ...args)
   }
+
+  export const isRemote = (application: string, moduleName: string, service: string):boolean => {
+    return coreInst.isRemote(application, moduleName, service)
+  }
 }
