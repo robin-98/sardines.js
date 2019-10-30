@@ -39,15 +39,9 @@ export namespace RepositoryClient {
   let entries: EntryCache [] = []
   let drivers: {[name: string]: any} = {}
   let platform: string = 'nodejs'
-  export interface ServiceCache {
-    [app: string]: {
-      [moduleName: string]: {
-        [serviceName: string]: any
-      }
-    }
-  }
-  export let remoteServices: ServiceCache = {}
-  export let localServices: ServiceCache = {}
+
+  export let remoteServices: Sardines.Runtime.ServiceCache = {}
+  export let localServices: Sardines.Runtime.ServiceCache = {}
   
   export const setLocalServices = (localServiceCache: any) => {
     // deep copy cache

@@ -212,9 +212,18 @@ export namespace Sardines {
             cpu_cores?: number
             mem_megabytes?: number
             providers?: Sardines.ProviderDefinition[]
-          }
+        }
+
+        export interface ServiceCache {
+            [appName: string]: {
+              [moduleName: string]: {
+                [serviceName: string]: any
+              }
+            }
+        }
     }
 
+    // Transform between data structures
     export namespace Transform {
         export const fromServiceToEmptyRuntime = (service: Service): Runtime.Service|null => {
             if (!service.application) return null
@@ -229,5 +238,17 @@ export namespace Sardines {
                 entries: []
             }
         }
+
+        export const fromServiceDescriptionFileToServiceCache = (descfile: ServiceDescriptionFile): Runtime.ServiceCache|null => {
+            if (!descfile || !descfile.application || !descfile.services || !descfile.services.length) return null
+            const cache :Runtime.ServiceCache = {}
+            cache[descfile.application] = {}
+            for (let service of descfile.services) {
+                if (!service.module || !service.name) continue
+                if (!cache[descfile.application][service.module]) cache[descfile.application][service.module] = {}
+                cache[descfile.application][service.module][service.name] = service
+            }
+            return cache
+        } 
     }
 }
