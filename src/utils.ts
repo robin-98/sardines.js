@@ -201,12 +201,12 @@ export const sleep = async(milliseconds: number) => {
     })
 }
 
-export const getDriverKey = (pvdrSettings: any):string => {
+export const getKey = (obj: any):string => {
     let key = ''
-    if (pvdrSettings) {
-        Object.keys(pvdrSettings).sort().map(prop => {
-            if (!key) key = JSON.stringify(pvdrSettings[prop])
-            else key+=':'+JSON.stringify(pvdrSettings[prop])
+    if (obj && typeof obj === 'object') {
+        Object.keys(obj).sort().map(prop => {
+            if (!key) key = JSON.stringify(obj[prop])
+            else key+=':'+JSON.stringify(obj[prop])
         })
     }
     return key

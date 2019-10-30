@@ -15,6 +15,7 @@ export namespace Sardines {
         application?: string
         name: string
         module: string
+        version?: string
         arguments: ServiceArgument[]
         returnType: string
         isAsync?: boolean
@@ -217,8 +218,30 @@ export namespace Sardines {
         export interface ServiceCache {
             [appName: string]: {
               [moduleName: string]: {
-                [serviceName: string]: any
+                [serviceName: string]: {
+                    [versionString: string]: any
+                }
               }
+            }
+        }
+
+        export interface ProviderCache {
+            [pvdrKey: string]: {
+                providerInfo: Sardines.ProviderPublicInfo|null
+                serviceRuntimeIds: string[]
+                serviceCache: Sardines.Runtime.ServiceCache
+            }
+        }
+
+        export interface ServiceRuntimeUpdateResult {
+            [appName:string]:{
+                [pvdrKey:string]:{
+                    application: string
+                    module: string
+                    name: string
+                    version: string
+                    runtimeId: string
+                }[]
             }
         }
     }
@@ -239,16 +262,62 @@ export namespace Sardines {
             }
         }
 
-        export const fromServiceDescriptionFileToServiceCache = (descfile: ServiceDescriptionFile): Runtime.ServiceCache|null => {
+        export const fromServiceDescriptionFileToServiceCache = (descfile: ServiceDescriptionFile, options: {booleanValue: boolean, version: string} = {booleanValue: true, version: '*'}): Runtime.ServiceCache|null => {
             if (!descfile || !descfile.application || !descfile.services || !descfile.services.length) return null
             const cache :Runtime.ServiceCache = {}
             cache[descfile.application] = {}
             for (let service of descfile.services) {
                 if (!service.module || !service.name) continue
                 if (!cache[descfile.application][service.module]) cache[descfile.application][service.module] = {}
-                cache[descfile.application][service.module][service.name] = service
+                if (!cache[descfile.application][service.module][service.name]) {
+                    cache[descfile.application][service.module][service.name] = {}
+                }
+                cache[descfile.application][service.module][service.name][options.version] = options.booleanValue ? true: service
             }
             return cache
-        } 
+        }
+        
+        export const mergeServiceCaches = (to: Runtime.ServiceCache, from: Runtime.ServiceCache) => {
+            if (!to || !from) return
+            for (let appName of Object.keys(from)) {
+                if (!to[appName]) to[appName] = {}
+                for (let moduleName of Object.keys(from[appName])) {
+                    if (!to[appName][moduleName]) to[appName][moduleName] = {}
+                    for (let serviceName of Object.keys(from[appName][moduleName])) {
+                        if (!to[appName][moduleName][serviceName]) to[appName][moduleName][serviceName] = {}
+                        for (let version of Object.keys(from[appName][moduleName][serviceName])) {
+                        to[appName][moduleName][serviceName][version] = from[appName][moduleName][serviceName][version]
+                        }
+                    }
+                }
+            }
+        }
+
+        export const pushServiceIntoProviderCache = (pvdrCache: Runtime.ProviderCache, pvdrkey: string, pvdr: Sardines.ProviderPublicInfo|null, service: Sardines.ServiceIdentity, value: any = true) => {
+            if (!pvdrCache || !pvdrkey
+               || !service || !service.application || !service.module || !service.name || !service.version) {
+                   return
+            }
+            
+            if (!pvdrCache[pvdrkey]) pvdrCache[pvdrkey] = {
+                providerInfo: pvdr,
+                serviceCache: {},
+                serviceRuntimeIds: []
+            }
+            pvdrCache[pvdrkey].serviceRuntimeIds
+            if (typeof value === 'string' && pvdrCache[pvdrkey].serviceRuntimeIds.indexOf(value)<0) {
+                pvdrCache[pvdrkey].serviceRuntimeIds.push(value)
+            }
+            if (!pvdrCache[pvdrkey].serviceCache[service.application]) {
+                pvdrCache[pvdrkey].serviceCache[service.application] = {}
+            }
+            if (!pvdrCache[pvdrkey].serviceCache[service.application][service.module]) {
+                pvdrCache[pvdrkey].serviceCache[service.application][service.module] = {}
+            }
+            if (!pvdrCache[pvdrkey].serviceCache[service.application][service.module][service.name]) {
+                pvdrCache[pvdrkey].serviceCache[service.application][service.module][service.name] = {}
+            }
+            pvdrCache[pvdrkey].serviceCache[service.application][service.module][service.name][service.version||'*'] = value
+        }
     }
 }

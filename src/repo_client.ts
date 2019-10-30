@@ -46,16 +46,7 @@ export namespace RepositoryClient {
   export const setLocalServices = (localServiceCache: any) => {
     // deep copy cache
     if (!localServiceCache) return
-    for (let appName of Object.keys(localServiceCache)) {
-      if (!localServices[appName]) localServices[appName] = {}
-      for (let moduleName of Object.keys(localServiceCache[appName])) {
-        if (!localServices[appName][moduleName]) localServices[appName][moduleName] = {}
-        for (let serviceName of Object.keys(localServiceCache[appName][moduleName])) {
-          localServices[appName][moduleName][serviceName] = localServiceCache[appName][moduleName][serviceName]
-        }
-      }
-    }
-
+    Sardines.Transform.mergeServiceCaches(localServices, localServiceCache)
   }
 
   export const setupPlatform = (p: string) => {
@@ -184,7 +175,7 @@ export namespace RepositoryClient {
             err = resObj
           }
       } else if (typeof driverName === 'string' && drivers[driverName]) {
-        const driverInst = Factory.getInstance(pvdr.driver, pvdr, 'driver', utils.getDriverKey(pvdr))
+        const driverInst = Factory.getInstance(pvdr.driver, pvdr, 'driver', utils.getKey(pvdr))
         let serviceDefinition = repoServices[service]
         let customArgs: any[] = <any[]>customArguments(ArgumentType.args, entry, service, ...args)
         try {
