@@ -164,7 +164,7 @@ export namespace Sardines {
     
         export interface Service {
             identity: ServiceIdentity
-            entries?: ServiceEntry[]
+            entries: ServiceEntry[]
             arguments?: ServiceArgument[]
             returnType?: string
             expireInSeconds?: number
