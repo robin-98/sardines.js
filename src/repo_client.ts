@@ -39,11 +39,29 @@ export namespace RepositoryClient {
   let entries: EntryCache [] = []
   let drivers: {[name: string]: any} = {}
   let platform: string = 'nodejs'
-  export let remoteServices: {[app: string]:{[moduleName: string]: {[serviceName: string]: string}}} = {}
-  export let localServices: {[app: string]:{[moduleName: string]: {[serviceName: string]: string}}} = {}
+  export interface ServiceCache {
+    [app: string]: {
+      [moduleName: string]: {
+        [serviceName: string]: any
+      }
+    }
+  }
+  export let remoteServices: ServiceCache = {}
+  export let localServices: ServiceCache = {}
   
   export const setLocalServices = (localServiceCache: any) => {
-    localServices = localServiceCache
+    // deep copy cache
+    if (!localServiceCache) return
+    for (let appName of Object.keys(localServiceCache)) {
+      if (!localServices[appName]) localServices[appName] = {}
+      for (let moduleName of Object.keys(localServiceCache[appName])) {
+        if (!localServices[appName][moduleName]) localServices[appName][moduleName] = {}
+        for (let serviceName of Object.keys(localServiceCache[appName][moduleName])) {
+          localServices[appName][moduleName][serviceName] = localServiceCache[appName][moduleName][serviceName]
+        }
+      }
+    }
+
   }
 
   export const setupPlatform = (p: string) => {
@@ -57,8 +75,6 @@ export namespace RepositoryClient {
     }
   }
 
-  
-  
   export const setupRepositoryEntries = (repoEntries: Sardines.Entry[]) => {
       if (!repoEntries || !Array.isArray(repoEntries) || repoEntries.length == 0) {
           throw 'Repository entry is empty'
