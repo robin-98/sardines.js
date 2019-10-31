@@ -173,7 +173,11 @@ export namespace Sardines {
         }
     
         export interface DeployResult {
-            [applicationName: string]: Service[]
+            providers: ProviderDefinition[]
+            services: {
+                [applicationName: string]: Runtime.Service[]
+            }
+            resourceId?: string
         }
 
         // Runtime Resource

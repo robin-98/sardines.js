@@ -252,7 +252,7 @@ export const Repository = {
       "returnType": "any"
     },
     {
-      "name": "updateServiceRuntime",
+      "name": "uploadServiceDeployResult",
       "module": "/repository",
       "arguments": [
         {
