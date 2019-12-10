@@ -23,6 +23,7 @@ export class Factory {
 
   // Factory method
   static setClass(name: string, Class: any, type: string = 'unknown'): void {
+      console.log('going to set class for:', type, name, ', class:', Class)
       if (typeof name !== 'string' || !name || typeof Class !== 'function') return
       if (!this.classes.has(type)) this.classes.set(type, new Map())
       const category = this.classes.get(type)!
