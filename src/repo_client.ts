@@ -54,6 +54,7 @@ export namespace RepositoryClient {
   }
 
   export const setupDrivers = (driverCache: {[name: string]: any}) => {
+    console.log('going to setup drivers:', driverCache)
     for (let driverName in driverCache) {
       Factory.setClass(driverName, driverCache[driverName], 'driver')
       drivers[driverName] = true
