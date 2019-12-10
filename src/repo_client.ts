@@ -54,9 +54,7 @@ export namespace RepositoryClient {
   }
 
   export const setupDrivers = (driverCache: {[name: string]: any}) => {
-    console.log('going to setup drivers:', driverCache)
     for (let driverName in driverCache) {
-      console.log('before setting class for driver', driverName, ', type of class:', typeof driverCache[driverName], ', value of class:', driverCache[driverName])
       Factory.setClass(driverName, driverCache[driverName], 'driver')
       drivers[driverName] = true
     }
@@ -97,6 +95,7 @@ export namespace RepositoryClient {
         }
       }
       if (Object.keys(tmpDrivers).length > 0) {
+        console.log('setup drivers from here:', tmpDrivers)
         setupDrivers(tmpDrivers)
       }
     }
@@ -178,24 +177,24 @@ export namespace RepositoryClient {
           }
       } else if (typeof driverName === 'string' && drivers[driverName]) {
         const driverInst = Factory.getInstance(pvdr.driver, pvdr, 'driver', utils.getKey(pvdr))
-        let serviceDefinition = repoServices[service]
-        let customArgs: any[] = <any[]>customArguments(ArgumentType.args, entry, service, ...args)
-        try {
-          serviceDefinition.application = repoAppName
-          console.log('got driver instance for provider:', pvdr)
-          console.log('going to invoke driver for service:', serviceDefinition)
-          res = await driverInst.invokeService(Sardines.Transform.fromServiceToEmptyRuntime(serviceDefinition)!, ...customArgs)
-          console.log('response from driver:', res)
-          switch (serviceDefinition.returnType) {
-            case 'string': case 'number': case 'boolean':
-              break
-            default:
-              resObj = res
-              break
+        if (!driverInst) {
+          err = utils.unifyErrMesg(`no available driver for "${pvdr.driver}" on platform '${platform}'`, 'sardines', 'repository client')
+        } else {
+          let serviceDefinition = repoServices[service]
+          let customArgs: any[] = <any[]>customArguments(ArgumentType.args, entry, service, ...args)
+          try {
+            serviceDefinition.application = repoAppName
+            res = await driverInst.invokeService(Sardines.Transform.fromServiceToEmptyRuntime(serviceDefinition)!, ...customArgs)
+            switch (serviceDefinition.returnType) {
+              case 'string': case 'number': case 'boolean':
+                break
+              default:
+                resObj = res
+                break
+            }
+          } catch (e) {
+            err = e
           }
-        } catch (e) {
-          console.error('error of invoking driver:', utils.inspect(e))
-          err = e
         }
       } else {
         err = utils.unifyErrMesg(`no available driver for "${pvdr.driver}" on platform '${platform}'`, 'sardines', 'repository client')
@@ -255,9 +254,7 @@ export namespace RepositoryClient {
               if (!entry.token) {
                   await requestRepoServiceOnSingleEntry(entry, RepositoryService.signIn)
               }
-              console.log('entry:', utils.inspect(entry))
               res = await requestRepoServiceOnSingleEntry(entry, service, ...args)
-              console.log('res:', res)
               error = null
               break
           } catch (e) {
@@ -295,7 +292,6 @@ export namespace RepositoryClient {
   }
 
   export const fetchServiceRuntime = async(serviceIdentity: Sardines.ServiceIdentity) => {
-    console.log('in repo_client, calling repsoitory for service runtime, service id:', serviceIdentity)
     return await requestRepoService(RepositoryService.fetchServiceRuntime, serviceIdentity)
   }
 

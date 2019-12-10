@@ -24,12 +24,10 @@ export class Factory {
 
   // Factory method
   static setClass(name: string, Class: any, type: string = 'unknown'): void {
-      console.log('going to set class for:', type, name, ', class:', Class)
       if (typeof name !== 'string' || !name || !Class) return
       if (!this.classes.has(type)) this.classes.set(type, new Map())
       const category = this.classes.get(type)!
       category.set(name, Class)
-      console.log('successfully set class for:', type, name, ', class:', Class)
   }
 
   static getClass(name: string, type: string = 'unknown'): any {
@@ -64,11 +62,9 @@ export class Factory {
 
       // Not found in memory
       if (typeof CustomClass === 'function') {
-          console.log('custom class:', CustomClass)
           instance = new CustomClass(settings)
       } else if (typeof CustomClass === 'string' && CustomClass) {
           const Class = this.getClass(CustomClass, type)
-          console.log('class:', Class, 'class name:', CustomClass)
           // Create the instance of a class
           if (Class && typeof Class === 'function') {
               instance = new Class(settings)
@@ -94,7 +90,6 @@ export class Factory {
               fastcache.set(fastKey, instance)
           }
       }
-      console.log('instance:', instance)
       return instance
   }
 
