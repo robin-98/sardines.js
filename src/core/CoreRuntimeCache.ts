@@ -78,6 +78,7 @@ export class SardinesCoreRuntimeCache {
     }
     let serviceCache = this.serviceRuntimeCache[serviceIdentityStringShort][version]
     if (!serviceCache || hasServiceRuntimeExpired(serviceCache)) {
+      console.log('going to fetch service runtime')
       serviceCache = await this.fetchServiceRuntime(serviceIdentity)
       console.log('service identity:', serviceIdentity)
       console.log('service cache:', serviceCache)
