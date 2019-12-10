@@ -69,7 +69,7 @@ export class Factory {
           const Class = this.getClass(CustomClass, type)
           console.log('class:', Class, 'class name:', CustomClass)
           // Create the instance of a class
-          if (typeof Class === 'function') instance = new Class(settings)
+          if (Class) instance = new Class(settings)
       }
       if (instance) {
           if (!memcache) {
