@@ -249,6 +249,7 @@ export namespace RepositoryClient {
               if (!entry.token) {
                   await requestRepoServiceOnSingleEntry(entry, RepositoryService.signIn)
               }
+              console.log('entry:', utils.inspect(entry))
               res = await requestRepoServiceOnSingleEntry(entry, service, ...args)
               error = null
               break
