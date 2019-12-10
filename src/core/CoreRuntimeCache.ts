@@ -79,6 +79,7 @@ export class SardinesCoreRuntimeCache {
       serviceCache = await this.fetchServiceRuntime(serviceIdentity)
       console.log('service identity:', serviceIdentity)
       console.log('service cache:', serviceCache)
+      console.log('here')
       this.setServiceCache(serviceIdentity, serviceCache)
     }
     if (!serviceCache) {
