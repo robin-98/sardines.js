@@ -7,6 +7,7 @@
  */
 
 import { isEqual, debugLog } from './utils'
+import * as utils from './utils'
 
 // 2019-05-08
 interface FactoryInstance {
@@ -72,7 +73,10 @@ export class Factory {
           if (Class && typeof Class === 'function') {
               instance = new Class(settings)
           } else if (typeof Class === 'object') {
-            instance = Class(settings)
+              console.log('got object type class:', utils.inspect(Class))
+              console.log('the object type class true type is:', Object.prototype.toString.call(Class))
+              console.log('name of class:', Class.name)
+              instance = new Class[Class.name](settings)
           }
       }
       if (instance) {
