@@ -180,6 +180,7 @@ export namespace RepositoryClient {
         let customArgs: any[] = <any[]>customArguments(ArgumentType.args, entry, service, ...args)
         try {
           serviceDefinition.application = repoAppName
+          console.log('got driver instance for provider:', pvdr)
           console.log('going to invoke driver for service:', serviceDefinition)
           res = await driverInst.invokeService(Sardines.Transform.fromServiceToEmptyRuntime(serviceDefinition)!, ...customArgs)
           console.log('response from driver:', res)
