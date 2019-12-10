@@ -61,9 +61,11 @@ export class Factory {
 
       // Not found in memory
       if (typeof CustomClass === 'function') {
+          console.log('custom class:', CustomClass)
           instance = new CustomClass(settings)
       } else if (typeof CustomClass === 'string' && CustomClass) {
           const Class = this.getClass(CustomClass, type)
+          console.log('class:', Class, 'class name:', CustomClass)
           // Create the instance of a class
           if (typeof Class === 'function') instance = new Class(settings)
       }
