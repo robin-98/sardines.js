@@ -192,6 +192,7 @@ export namespace RepositoryClient {
               break
           }
         } catch (e) {
+          console.error('error of invoking driver:', utils.inspect(e))
           err = e
         }
       } else {
