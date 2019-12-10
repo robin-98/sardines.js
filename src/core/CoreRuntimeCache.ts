@@ -38,7 +38,9 @@ export class SardinesCoreRuntimeCache {
     for (let prop of ['providerInfo', 'providerSettings', 'service_id', 'id']) {
       if (serviceQuery[prop]) delete serviceQuery[prop]
     }
+    console.log('before requesting repository client to fetch service runtime for:', serviceIdentity)
     const runtime: Sardines.Runtime.Service = await RepositoryClient.fetchServiceRuntime(serviceIdentity)
+    console.log('result of fetching:', runtime)
     if (runtime) {
       if (runtime.entries && runtime.entries.length && runtime.entries[0].providerInfo && runtime.entries[0].providerInfo.driver
         && runtime.identity && runtime.identity.application && runtime.identity.module && runtime.identity.name && runtime.identity.version

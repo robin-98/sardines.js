@@ -287,6 +287,7 @@ export namespace RepositoryClient {
   }
 
   export const fetchServiceRuntime = async(serviceIdentity: Sardines.ServiceIdentity) => {
+    console.log('in repo_client, calling repsoitory for service runtime, service id:', serviceIdentity)
     return await requestRepoService(RepositoryService.fetchServiceRuntime, serviceIdentity)
   }
 
