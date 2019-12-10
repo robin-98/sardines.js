@@ -82,6 +82,7 @@ export class Factory {
               fastcache.set(fastKey, instance)
           }
       }
+      console.log('instance:', instance)
       return instance
   }
 
