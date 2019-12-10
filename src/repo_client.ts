@@ -95,7 +95,6 @@ export namespace RepositoryClient {
         }
       }
       if (Object.keys(tmpDrivers).length > 0) {
-        console.log('setup drivers from here:', tmpDrivers)
         setupDrivers(tmpDrivers)
       }
     }

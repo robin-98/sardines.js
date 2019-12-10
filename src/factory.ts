@@ -72,7 +72,7 @@ export class Factory {
               console.log('got object type class:', utils.inspect(Class))
               console.log('the object type class true type is:', Object.prototype.toString.call(Class))
               console.log('name of class:', Class.name)
-              instance = new Class[Class.name](settings)
+            // instance = new Class[Class.name](settings)
           }
       }
       if (instance) {
