@@ -192,6 +192,7 @@ export namespace RepositoryClient {
             }
           } catch (e) {
             err = e
+            console.log('ERROR of driver invoked:', e)
           }
         }
       } else {
