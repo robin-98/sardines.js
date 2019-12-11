@@ -27,7 +27,7 @@ export class Factory {
       if (typeof name !== 'string' || !name || !Class) return
       if (!this.classes.has(type)) this.classes.set(type, new Map())
       const category = this.classes.get(type)!
-      category.set(name, Class)
+      category.set(name, utils.getDefaultClassFromPackage(Class))
   }
 
   static getClass(name: string, type: string = 'unknown'): any {
@@ -66,18 +66,7 @@ export class Factory {
       } else if (typeof CustomClass === 'string' && CustomClass) {
           const Class = this.getClass(CustomClass, type)
           // Create the instance of a class
-          if (Class && typeof Class === 'function') {
-              instance = new Class(settings)
-          } else if (typeof Class === 'object' && Class.default) {
-              instance = new Class.default(settings)
-          } else if (typeof Class === 'object' && Class.Class) {
-              instance = new Class.Class(settings)
-          } else if (typeof Class === 'object' ) {
-              console.warn('[Sardines Core] the Factory got an object type class:', Class, ', inspected:', utils.inspect(Class), ', name property:', Class.name)
-              console.warn('[Sardines Core] this may caused by a default export in the package of that class, but current runtime environment is using CommonJS which do not suport default export')
-              console.warn('[Sardines Core] to fix this problem, please contact that package maintainer, to add a named export "Class" to export the class')
-            // instance = new Class[Class.name](settings)
-          }
+          instance = new Class(settings)
       }
       if (instance) {
           if (!memcache) {

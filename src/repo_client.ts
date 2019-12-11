@@ -83,10 +83,7 @@ export namespace RepositoryClient {
         if (driver.locationType && driver.name && !drivers[driver.name]) {
           if (driver.locationType === Sardines.LocationType.npm || driver.locationType === Sardines.LocationType.npm_link) {
             try {
-              tmpDrivers[driver.name] = require(driver.name)
-              if (tmpDrivers[driver.name] && tmpDrivers[driver.name].default) {
-                tmpDrivers[driver.name] = tmpDrivers[driver.name].default
-              }
+              tmpDrivers[driver.name] = utils.getDefaultClassFromPackage(require(driver.name))
             } catch(e) {
               console.error(`ERROR while loading ${driver.name}:`, e)
               throw `Can not load driver ${driver.name}`
