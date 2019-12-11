@@ -213,20 +213,17 @@ export const getKey = (obj: any):string => {
 }
 
 export const getDefaultClassFromPackage = (packClass: any) => {
-    try {
-        if (typeof packClass === 'function') {
-            return packClass
-        } else if (typeof packClass === 'object' && packClass.Class && typeof packClass.Class === 'function') {
-            return packClass.Class
-        } else if (typeof packClass === 'object' && packClass.default && typeof packClass.default === 'function') {
-            return packClass.default
-        } else if (typeof packClass === 'object' ) {
-            console.warn('[Sardines Core] the got an object which should be a class:', packClass, ', inspected:', inspect(packClass), ', name property:', packClass.name)
-            console.warn('[Sardines Core] this may caused by a default export in the package of that class, but current runtime environment is using CommonJS which do not suport default export')
-            console.warn('[Sardines Core] to fix this problem, please contact that package maintainer, to add a named export "Class" to export the class')
-        }
-    } catch (e) {
-
+    console.log('trying to get class from package:', packClass)
+    if (typeof packClass === 'function') {
+        return packClass
+    } else if (typeof packClass === 'object' && packClass.Class && typeof packClass.Class === 'function') {
+        return packClass.Class
+    } else if (typeof packClass === 'object' && packClass.default && typeof packClass.default === 'function') {
+        return packClass.default
+    } else if (typeof packClass === 'object' ) {
+        console.warn('[Sardines Core] the got an object which should be a class:', packClass, ', inspected:', inspect(packClass), ', name property:', packClass.name)
+        console.warn('[Sardines Core] this may caused by a default export in the package of that class, but current runtime environment is using CommonJS which do not suport default export')
+        console.warn('[Sardines Core] to fix this problem, please contact that package maintainer, to add a named export "Class" to export the class')
     }
     return null
 }
