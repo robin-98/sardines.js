@@ -68,6 +68,8 @@ export class Factory {
           // Create the instance of a class
           if (Class && typeof Class === 'function') {
               instance = new Class(settings)
+          } else if (typeof Class === 'object' && Class.default) {
+              instance = new Class.default(settings)
           } else if (typeof Class === 'object' && Class.Class) {
               instance = new Class.Class(settings)
           } else if (typeof Class === 'object' ) {
