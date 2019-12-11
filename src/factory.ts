@@ -69,7 +69,7 @@ export class Factory {
           if (Class && typeof Class === 'function') {
               instance = new Class(settings)
           } else if (typeof Class === 'object') {
-              console.log('got object type class:', utils.inspect(Class))
+              console.log('got object type class:', Class, ', inspected:', utils.inspect(Class))
               console.log('the object type class true type is:', Object.prototype.toString.call(Class))
               console.log('name of class:', Class.name)
             // instance = new Class[Class.name](settings)
