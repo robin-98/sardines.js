@@ -174,12 +174,13 @@ export namespace RepositoryClient {
       } else if (typeof driverName === 'string' && drivers[driverName]) {
         const driverInst = Factory.getInstance(pvdr.driver, pvdr, 'driver', utils.getKey(pvdr))
         if (!driverInst) {
-          err = utils.unifyErrMesg(`no available driver for "${pvdr.driver}" on platform '${platform}'`, 'sardines', 'repository client')
+          err = utils.unifyErrMesg(`no available driver for "${pvdr.driver}" in cache`, 'sardines', 'repository client')
         } else {
           let serviceDefinition = repoServices[service]
           let customArgs: any[] = <any[]>customArguments(ArgumentType.args, entry, service, ...args)
           try {
             serviceDefinition.application = repoAppName
+            console.log('going to invoke driver [' + pvdr.driver + '] for service:', serviceDefinition, ', driverInst:', driverInst, ', provider:', pvdr)
             res = await driverInst.invokeService(Sardines.Transform.fromServiceToEmptyRuntime(serviceDefinition)!, ...customArgs)
             switch (serviceDefinition.returnType) {
               case 'string': case 'number': case 'boolean':

@@ -213,7 +213,6 @@ export const getKey = (obj: any):string => {
 }
 
 export const getDefaultClassFromPackage = (packClass: any) => {
-    console.log('trying to get class from package:', packClass)
     if (typeof packClass === 'function') {
         return packClass
     } else if (typeof packClass === 'object' && packClass.Class && typeof packClass.Class === 'function') {
