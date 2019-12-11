@@ -68,10 +68,12 @@ export class Factory {
           // Create the instance of a class
           if (Class && typeof Class === 'function') {
               instance = new Class(settings)
-          } else if (typeof Class === 'object') {
-              console.log('got object type class:', Class, ', inspected:', utils.inspect(Class))
-              console.log('the object type class true type is:', Object.prototype.toString.call(Class))
-              console.log('name of class:', Class.name)
+          } else if (typeof Class === 'object' && Class.Class) {
+              instance = new Class.Class(settings)
+          } else if (typeof Class === 'object' ) {
+              console.warn('[Sardines Core] the Factory got an object type class:', Class, ', inspected:', utils.inspect(Class), ', name property:', Class.name)
+              console.warn('[Sardines Core] this may caused by a default export in the package of that class, but current runtime environment is using CommonJS which do not suport default export')
+              console.warn('[Sardines Core] to fix this problem, please contact that package maintainer, to add a named export "Class" to export the class')
             // instance = new Class[Class.name](settings)
           }
       }
