@@ -65,8 +65,10 @@ export class Factory {
           instance = new CustomClass(settings)
       } else if (typeof CustomClass === 'string' && CustomClass) {
           const Class = this.getClass(CustomClass, type)
-          // Create the instance of a class
-          instance = new Class(settings)
+          if (Class) {
+              // Create the instance of a class
+              instance = new Class(settings)
+          }
       }
       if (instance) {
           if (!memcache) {
