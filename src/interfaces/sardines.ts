@@ -219,11 +219,16 @@ export namespace Sardines {
             providers?: Sardines.ProviderDefinition[]
         }
 
+        export interface ServiceCacheItem {
+            serviceSettingsInProvider?: any
+            serviceRuntimeId?: string
+        }
+
         export interface ServiceCache {
             [appName: string]: {
               [moduleName: string]: {
                 [serviceName: string]: {
-                    [versionString: string]: any
+                    [versionString: string]: boolean|Runtime.Service|Sardines.Service|ServiceCacheItem
                 }
               }
             }
@@ -266,7 +271,10 @@ export namespace Sardines {
             }
         }
 
-        export const fromServiceDescriptionFileToServiceCache = (descfile: ServiceDescriptionFile, options: {booleanValue: boolean, version: string} = {booleanValue: true, version: '*'}): Runtime.ServiceCache|null => {
+        export const fromServiceDescriptionFileToServiceCache = (
+                        descfile: ServiceDescriptionFile, 
+                        options: {booleanValue: boolean, version: string} = {booleanValue: true, version: '*'}
+                     ): Runtime.ServiceCache|null => {
             if (!descfile || !descfile.application || !descfile.services || !descfile.services.length) return null
             const cache :Runtime.ServiceCache = {}
             cache[descfile.application] = {}
@@ -310,6 +318,7 @@ export namespace Sardines {
             }
             pvdrCache[pvdrkey].serviceRuntimeIds
             if (typeof value === 'string' && pvdrCache[pvdrkey].serviceRuntimeIds.indexOf(value)<0) {
+                // the value is a service runtime ID
                 pvdrCache[pvdrkey].serviceRuntimeIds.push(value)
             }
             if (!pvdrCache[pvdrkey].serviceCache[service.application]) {
@@ -321,7 +330,20 @@ export namespace Sardines {
             if (!pvdrCache[pvdrkey].serviceCache[service.application][service.module][service.name]) {
                 pvdrCache[pvdrkey].serviceCache[service.application][service.module][service.name] = {}
             }
-            pvdrCache[pvdrkey].serviceCache[service.application][service.module][service.name][service.version||'*'] = value
+            // Convert casual code into cache item
+            const cacheItem: Runtime.ServiceCacheItem = {}
+            const currentValue:any = pvdrCache[pvdrkey].serviceCache[service.application][service.module][service.name][service.version||'*']
+            if (typeof currentValue === 'string') cacheItem.serviceRuntimeId = currentValue
+            else if (typeof currentValue === 'object') Object.assign(cacheItem, currentValue)
+
+            // Cache the new value in the cache item
+            if (typeof value === 'string') {
+                // the value is a service runtime Id
+                cacheItem.serviceRuntimeId = value
+            } else if (value && typeof value === 'object' && Object.keys(value).length) {
+                cacheItem.serviceSettingsInProvider = value
+            }
+            pvdrCache[pvdrkey].serviceCache[service.application][service.module][service.name][service.version||'*'] = cacheItem
         }
     }
 }
