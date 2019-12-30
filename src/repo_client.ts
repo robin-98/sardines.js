@@ -77,6 +77,8 @@ export namespace RepositoryClient {
     if (config.remoteServices) {
       remoteServices = config.remoteServices
     }
+
+
     if (initDrivers && config.drivers && config.drivers.length > 0) {
       const tmpDrivers: {[name: string]: any} = {}
       for (let driver of config.drivers) {

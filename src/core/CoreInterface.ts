@@ -10,20 +10,24 @@ export class SardinesCore extends SardinesCoreRuntimeCache {
   }
 
   isRemote (application: string, moduleName: string, service: string):boolean {
+    console.log(`[core][isRemote] checking [${application}:${moduleName}:${service}], localServices:`)
+    utils.inspectedLog(RepositoryClient.localServices)
+    let result = true
     if (RepositoryClient.localServices
       && RepositoryClient.localServices[application]
       && RepositoryClient.localServices[application][moduleName]
       && RepositoryClient.localServices[application][moduleName][service]
       ) {
-        return false
+        result = false
     } else if (RepositoryClient.remoteServices 
       && RepositoryClient.remoteServices[application]
       && RepositoryClient.remoteServices[application][moduleName]
       && RepositoryClient.remoteServices[application][moduleName][service]
     ) {
-      return true
+      result = true
     }
-    return true
+    console.log('[core][isRemote] check result of [${application}:${moduleName}:${service}]:', result)
+    return result
   }
 
   async invoke(service: Sardines.Runtime.Service, ...args: any[]) {
