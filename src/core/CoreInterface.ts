@@ -10,8 +10,8 @@ export class SardinesCore extends SardinesCoreRuntimeCache {
   }
 
   isRemote (application: string, moduleName: string, service: string):boolean {
-    console.log(`[core][isRemote] checking [${application}:${moduleName}:${service}], localServices:`)
-    utils.inspectedLog(RepositoryClient.localServices)
+    // console.log(`[core][isRemote] checking [${application}:${moduleName}:${service}], localServices:`)
+    // utils.inspectedLog(RepositoryClient.localServices)
     let result = true
     if (RepositoryClient.localServices
       && RepositoryClient.localServices[application]
@@ -26,7 +26,7 @@ export class SardinesCore extends SardinesCoreRuntimeCache {
     ) {
       result = true
     }
-    console.log('[core][isRemote] check result of [${application}:${moduleName}:${service}]:', result)
+    // console.log('[core][isRemote] check result of [${application}:${moduleName}:${service}]:', result)
     return result
   }
 
