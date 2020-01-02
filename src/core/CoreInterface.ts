@@ -40,6 +40,7 @@ export class SardinesCore extends SardinesCoreRuntimeCache {
         console.log('[core] service runtime:')
         utils.inspectedLog(serviceRuntime)
         const driverInst = Factory.getInstance(serviceRuntime.entries[0].providerInfo.driver, serviceRuntime.entries[0].providerInfo, 'driver', utils.getKey(serviceRuntime.entries[0].providerInfo))
+        console.log('[core] arguments:', args)
         return await driverInst.invokeService(serviceRuntime, ...args)
       } else {
         throw utils.unifyErrMesg(`Can not fetch runtime for service`, 'core', 'invoke')
