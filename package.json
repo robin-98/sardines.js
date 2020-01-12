@@ -8,7 +8,7 @@
     },
     "dependencies": {
         "@types/isomorphic-fetch": "0.0.35",
-        "@types/node": "^12.6.9",
+        "@types/node": "^12.12.24",
         "@types/semver": "^6.0.1",
         "isomorphic-fetch": "^2.2.1",
         "process": "^0.11.10",
