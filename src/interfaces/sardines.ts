@@ -145,6 +145,7 @@ export namespace Sardines {
     
     // Deploy plan file for some services
     export interface DeployPlan {
+        tags?: string[]
         providers: ProviderDefinition[]
         applications: ApplicationSettings[]
     }
@@ -173,6 +174,7 @@ export namespace Sardines {
         }
     
         export interface DeployResult {
+            tags?: string[]
             providers: ProviderDefinition[]
             services: {
                 [applicationName: string]: Runtime.Service[]
