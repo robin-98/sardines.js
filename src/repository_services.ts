@@ -295,6 +295,71 @@ export const Repository = {
         }
       ],
       "returnType": "any"
+    },
+    {
+      "name": "registerAccessPoint",
+      "module": "/repository",
+      "arguments": [
+        {
+          "name": "type",
+          "type": "string"
+        },
+        {
+          "name": "address",
+          "type": "string"
+        },
+        {
+          "name": "preference",
+          "type": "string"
+        },
+        {
+          "name": "token",
+          "type": "string"
+        }
+      ],
+      "returnType": "any"
+    },
+    {
+      "name": "removeAccessPoint",
+      "module": "/repository",
+      "arguments": [
+        {
+          "name": "type",
+          "type": "string"
+        },
+        {
+          "name": "address",
+          "type": "string"
+        },
+        {
+          "name": "token",
+          "type": "string"
+        }
+      ],
+      "returnType": "any"
+    },
+    {
+      "name": "operateServiceRuntimeInAccessPoint",
+      "module": "/repository",
+      "arguments": [
+        {
+          "name": "option",
+          "type": "{add?"
+        },
+        {
+          "name": "arrayOfServiceRuntimeIds",
+          "type": "string[]"
+        },
+        {
+          "name": "accessPoint",
+          "type": "{id?"
+        },
+        {
+          "name": "token",
+          "type": "string"
+        }
+      ],
+      "returnType": "any"
     }
   ],
   "application": "sardines"
