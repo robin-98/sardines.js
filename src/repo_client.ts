@@ -295,7 +295,12 @@ export namespace RepositoryClient {
   }
 
   export const exec = async(serviceName: string, data: any) => {
-    return await requestRepoService(serviceName, data)
+    try {
+      const res = await requestRepoService(serviceName, data)
+      return res
+    } catch (e) {
+      throw (`unexpected error in repository client: ${e}, request data: ${JSON.stringify(data)}, service name: ${serviceName}`)
+    }
   }
 
 }

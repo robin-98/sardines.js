@@ -5,6 +5,9 @@
  * @modify date 2019-06-15 16:41:16
  * @desc [description]
  */
+
+import { Sardines } from './sardines'
+
 export namespace Http {
     export enum Protocol {
         HTTP = 'http',
@@ -84,5 +87,11 @@ export namespace Http {
         middlewares?: any[]
         postProcesses?: any[]
         summary?: string
+    }
+
+    export namespace Transform {
+        export const parseServicePath = (service: Sardines.ServiceIdentity):string => {
+            return `/${service.application}/${service.module}/${service.name}`.replace(/\/\//g, '/')
+        }
     }
 }
