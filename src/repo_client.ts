@@ -299,7 +299,7 @@ export namespace RepositoryClient {
       const res = await requestRepoService(serviceName, data)
       return res
     } catch (e) {
-      throw (`unexpected error in repository client: ${e}, request data: ${JSON.stringify(data)}, service name: ${serviceName}`)
+      throw (`unexpected error in repository client: ${utils.inspect(e)}, request data: ${JSON.stringify(data)}, service name: ${serviceName}`)
     }
   }
 
